@@ -20,15 +20,31 @@ vim.keymap.set("n", "n", "nzzzv")
 vim.keymap.set("n", "N", "Nzzzv")
 
 -- next greatest remap ever : asbjornHaland
-vim.keymap.set({"n", "v"}, "<leader>y", [["+y]])
+vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
 vim.keymap.set("n", "<leader>Y", [["+Y]])
-vim.keymap.set("n", "<leader>p", [["+p]])
+vim.keymap.set("n", "<leader>pa", [["+p]]) -- PAste
 
 -- delete without yanking
-vim.keymap.set({"n", "v"}, "<leader>d", [["_d]])
+vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
 
 vim.keymap.set("n", "Q", "<nop>")
+vim.keymap.set("n", "q:", "<nop>")
 -- vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
+function FormatFunction()
+    vim.lsp.buf.format({
+        formatting_options = {
+            tabSize = 2,
+            insertSpaces = true
+        },
+        async = true,
+        range = {
+            ["start"] = vim.api.nvim_buf_get_mark(0, "<"),
+            ["end"] = vim.api.nvim_buf_get_mark(0, ">"),
+        }
+    })
+end
+
+vim.api.nvim_set_keymap("v", "<leader>f", "<Esc><cmd>lua FormatFunction()<CR>", { noremap = true })
 
 -- make curr file executable
 vim.keymap.set("n", "<leader>x", "<cmd>!chmod a+x %<CR>", { silent = true })
@@ -36,11 +52,17 @@ vim.keymap.set("n", "<leader>X", "<cmd>!chmod a-x %<CR>", { silent = true })
 
 
 -- git
-vim.keymap.set("n", "<leader>gb", "<cmd>Git blame<CR>")
+vim.keymap.set("n", "<leader>gb", "<cmd>Git blame -w -C -C -C<CR>")
 vim.keymap.set("n", "<leader>gl", "<cmd>Flog<CR>")
+
+-- neet
+vim.keymap.set("n", "<leader>lr", "<cmd>LspRestart<CR>")
 
 -- open terminal in right split
 vim.keymap.set("n", "<C-t>", "<cmd>vertical rightbelow terminal<CR>a")
+
+vim.keymap.set("n", "<leader>tt", "anpm run test<CR><C-\\><C-n>")
+
 -- open terminal in new tab
 vim.keymap.set("n", "<C-S-t>", "<cmd>tab terminal<CR>a")
 
@@ -77,3 +99,11 @@ vim.keymap.set("i", "<A-l>", "<C-\\><C-N><C-w>l")
 vim.keymap.set("i", "<A-h>", "<C-\\><C-N><C-w>h")
 vim.keymap.set("i", "<A-j>", "<C-\\><C-N><C-w>j")
 vim.keymap.set("i", "<A-k>", "<C-\\><C-N><C-w>k")
+
+-- remaps for backspace and delete
+-- c-h is backspace c-w is delete word backward
+vim.api.nvim_set_keymap('i', '<C-H>', '<C-W>', { noremap = true })
+vim.api.nvim_set_keymap('i', '<C-Delete>', '<Esc>ldei', { noremap = true })
+-- m-backspace is alt-backspace
+vim.api.nvim_set_keymap('i', '<M-Backspace>', '<Esc>ld0i', { noremap = true })
+vim.api.nvim_set_keymap('i', '<C-S-Delete>', '<Esc>ld$a', { noremap = true })
